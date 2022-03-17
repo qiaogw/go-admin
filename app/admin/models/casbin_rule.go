@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 //sys_casbin_rule
 type CasbinRule struct {
 	PType string `json:"p_type" gorm:"size:100;"`
@@ -12,5 +14,5 @@ type CasbinRule struct {
 }
 
 func (CasbinRule) TableName() string {
-	return "sys_casbin_rule"
+	return global.TablePrefix + "sys_casbin_rule"
 }

@@ -1,6 +1,9 @@
 package models
 
-import "go-admin/common/models"
+import (
+	"go-admin/common/global"
+	"go-admin/common/models"
+)
 
 type SysMenu struct {
 	MenuId     int       `json:"menuId" gorm:"primaryKey;autoIncrement"`
@@ -13,7 +16,7 @@ type SysMenu struct {
 	Action     string    `json:"action" gorm:"size:16;"`
 	Permission string    `json:"permission" gorm:"size:255;"`
 	ParentId   int       `json:"parentId" gorm:"size:11;"`
-	NoCache    bool      `json:"noCache" gorm:"size:8;"`
+	NoCache    int       `json:"noCache" gorm:"size:8;"`
 	Breadcrumb string    `json:"breadcrumb" gorm:"size:255;"`
 	Component  string    `json:"component" gorm:"size:255;"`
 	Sort       int       `json:"sort" gorm:"size:4;"`
@@ -25,13 +28,13 @@ type SysMenu struct {
 	Params     string    `json:"params" gorm:"-"`
 	RoleId     int       `gorm:"-"`
 	Children   []SysMenu `json:"children,omitempty" gorm:"-"`
-	IsSelect   bool      `json:"is_select" gorm:"-"`
+	IsSelect   int       `json:"is_select" gorm:"-"`
 	models.ControlBy
 	models.ModelTime
 }
 
 func (SysMenu) TableName() string {
-	return "sys_menu"
+	return global.TablePrefix + "sys_menu"
 }
 
 func (e *SysMenu) Generate() models.ActiveRecord {

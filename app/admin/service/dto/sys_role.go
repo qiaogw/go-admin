@@ -17,7 +17,7 @@ type SysRoleGetPageReq struct {
 	RoleSort  int    `form:"roleSort" search:"type:exact;column:role_sort;table:sys_role" comment:"角色排序"` // 角色排序
 	Flag      string `form:"flag" search:"type:exact;column:flag;table:sys_role" comment:"标记"`            // 标记
 	Remark    string `form:"remark" search:"type:exact;column:remark;table:sys_role" comment:"备注"`        // 备注
-	Admin     bool   `form:"admin" search:"type:exact;column:admin;table:sys_role" comment:"是否管理员"`
+	Admin     int    `form:"admin" search:"type:exact;column:admin;table:sys_role" comment:"是否管理员"`
 	DataScope string `form:"dataScope" search:"type:exact;column:data_scope;table:sys_role" comment:"是否管理员"`
 }
 
@@ -41,7 +41,7 @@ type SysRoleInsertReq struct {
 	RoleSort  int              `form:"roleSort" comment:"角色排序"` // 角色排序
 	Flag      string           `form:"flag" comment:"标记"`       // 标记
 	Remark    string           `form:"remark" comment:"备注"`     // 备注
-	Admin     bool             `form:"admin" comment:"是否管理员"`
+	Admin     int              `form:"admin" comment:"是否管理员"`
 	DataScope string           `form:"dataScope"`
 	SysMenu   []models.SysMenu `form:"sysMenu"`
 	MenuIds   []int            `form:"menuIds"`
@@ -78,7 +78,7 @@ type SysRoleUpdateReq struct {
 	RoleSort  int              `form:"roleSort" comment:"角色排序"` // 角色排序
 	Flag      string           `form:"flag" comment:"标记"`       // 标记
 	Remark    string           `form:"remark" comment:"备注"`     // 备注
-	Admin     bool             `form:"admin" comment:"是否管理员"`
+	Admin     int              `form:"admin" comment:"是否管理员"`
 	DataScope string           `form:"dataScope"`
 	SysMenu   []models.SysMenu `form:"sysMenu"`
 	MenuIds   []int            `form:"menuIds"`

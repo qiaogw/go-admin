@@ -28,7 +28,15 @@ func setupSimpleDatabase(host string, c *toolsConfig.Database) {
 	if global.Driver == "" {
 		global.Driver = c.Driver
 	}
-	log.Infof("%s => %s", host, pkg.Green(c.Source))
+	if global.TablePrefix == "" && c.TablePrefix != "" {
+		global.TablePrefix = c.TablePrefix + "_"
+	}
+	schemaName := ""
+	if c.Schema != "" && global.Driver == "postgres" {
+		schemaName = c.Schema
+		global.TablePrefix = schemaName + "." + global.TablePrefix
+	}
+	log.Infof("%s => %s, schema: %s", host, pkg.Green(c.Source), pkg.Green(schemaName))
 	registers := make([]toolsDB.ResolverConfigure, len(c.Registers))
 	for i := range c.Registers {
 		registers[i] = toolsDB.NewResolverConfigure(
@@ -41,6 +49,7 @@ func setupSimpleDatabase(host string, c *toolsConfig.Database) {
 	db, err := resolverConfig.Init(&gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
+			TablePrefix:   global.TablePrefix,
 		},
 		Logger: New(
 			logger.Config{
@@ -58,7 +67,7 @@ func setupSimpleDatabase(host string, c *toolsConfig.Database) {
 		log.Info(pkg.Green(c.Driver + " connect success !"))
 	}
 
-	e := mycasbin.Setup(db, "sys_")
+	e := mycasbin.Setup(db, global.TablePrefix)
 
 	sdk.Runtime.SetDb(host, db)
 	sdk.Runtime.SetCasbin(host, e)

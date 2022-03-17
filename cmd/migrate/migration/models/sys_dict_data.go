@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type DictData struct {
 	DictCode  int    `gorm:"primaryKey;autoIncrement;" json:"dictCode" example:"1"` //字典编码
 	DictSort  int    `gorm:"" json:"dictSort"`                                      //显示顺序
@@ -17,5 +19,5 @@ type DictData struct {
 }
 
 func (DictData) TableName() string {
-	return "sys_dict_data"
+	return global.TablePrefix + "sys_dict_data"
 }

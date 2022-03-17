@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type SysDept struct {
 	DeptId   int    `json:"deptId" gorm:"primaryKey;autoIncrement;"` //部门编码
 	ParentId int    `json:"parentId" gorm:""`                        //上级部门
@@ -15,5 +17,5 @@ type SysDept struct {
 }
 
 func (SysDept) TableName() string {
-	return "sys_dept"
+	return global.TablePrefix + "sys_dept"
 }

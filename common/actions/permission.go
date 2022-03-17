@@ -2,6 +2,7 @@ package actions
 
 import (
 	"errors"
+	"go-admin/common/global"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/go-admin-team/go-admin-core/logger"
@@ -47,10 +48,10 @@ func newDataPermission(tx *gorm.DB, userId interface{}) (*DataPermission, error)
 	var err error
 	p := &DataPermission{}
 
-	err = tx.Table("sys_user").
+	err = tx.Table(global.TablePrefix+"sys_user").
 		Select("sys_user.user_id", "sys_role.role_id", "sys_user.dept_id", "sys_role.data_scope").
-		Joins("left join sys_role on sys_role.role_id = sys_user.role_id").
-		Where("sys_user.user_id = ?", userId).
+		Joins("left join "+global.TablePrefix+"sys_role on sys_role.role_id = sys_user.role_id").
+		Where(global.TablePrefix+"sys_user.user_id = ?", userId).
 		Scan(p).Error
 	if err != nil {
 		err = errors.New("获取用户数据出错 msg:" + err.Error())
@@ -66,11 +67,11 @@ func Permission(tableName string, p *DataPermission) func(db *gorm.DB) *gorm.DB 
 		}
 		switch p.DataScope {
 		case "2":
-			return db.Where(tableName+".create_by in (select sys_user.user_id from sys_role_dept left join sys_user on sys_user.dept_id=sys_role_dept.dept_id where sys_role_dept.role_id = ?)", p.RoleId)
+			return db.Where(tableName+".create_by in (select sys_user.user_id from "+global.TablePrefix+"sys_role_dept left join "+global.TablePrefix+"sys_user on sys_user.dept_id=sys_role_dept.dept_id where "+global.TablePrefix+"sys_role_dept.role_id = ?)", p.RoleId)
 		case "3":
-			return db.Where(tableName+".create_by in (SELECT user_id from sys_user where dept_id = ? )", p.DeptId)
+			return db.Where(tableName+".create_by in (SELECT user_id from "+global.TablePrefix+"sys_user where dept_id = ? )", p.DeptId)
 		case "4":
-			return db.Where(tableName+".create_by in (SELECT user_id from sys_user where sys_user.dept_id in(select dept_id from sys_dept where dept_path like ? ))", "%/"+pkg.IntToString(p.DeptId)+"/%")
+			return db.Where(tableName+".create_by in (SELECT user_id from "+global.TablePrefix+"sys_user where "+global.TablePrefix+"sys_user.dept_id in(select dept_id from "+global.TablePrefix+"sys_dept where dept_path like ? ))", "%/"+pkg.IntToString(p.DeptId)+"/%")
 		case "5":
 			return db.Where(tableName+".create_by = ?", p.UserId)
 		default:

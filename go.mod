@@ -28,8 +28,16 @@ require (
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	gorm.io/driver/mysql v1.0.4-0.20201206014609-ae5fd10184f6
-	gorm.io/driver/postgres v1.0.6-0.20201208020313-1ed927cfab53
+	gorm.io/driver/postgres v1.2.0
 	gorm.io/driver/sqlite v1.1.5-0.20201206014648-c84401fbe3ba
 	gorm.io/driver/sqlserver v1.0.4
-	gorm.io/gorm v1.21.11
+	gorm.io/gorm v1.21.16
+)
+
+replace (
+	github.com/go-admin-team/go-admin-core v1.3.8 => github.com/guo1017138/go-admin-core v0.0.0-20220316084212-488971190944
+
+	github.com/go-admin-team/go-admin-core/sdk v1.3.9 => github.com/guo1017138/go-admin-core/sdk v0.0.0-20220316084212-488971190944
+
+	github.com/go-admin-team/gorm-adapter/v3 v3.2.1-0.20210902112335-4148cb356a24 => github.com/guo1017138/gorm-adapter/v3 v3.0.0-20220316093141-022c344c184f
 )

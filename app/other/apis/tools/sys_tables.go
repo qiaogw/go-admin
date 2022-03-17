@@ -79,7 +79,7 @@ func (e SysTable) Get(c *gin.Context) {
 
 	var data tools.SysTables
 	data.TableId, _ = pkg.StringToInt(c.Param("tableId"))
-	result, err := data.Get(db,true)
+	result, err := data.Get(db, true)
 	if err != nil {
 		log.Errorf("Get error, %s", err.Error())
 		e.Error(500, err, "")
@@ -106,7 +106,7 @@ func (e SysTable) GetSysTablesInfo(c *gin.Context) {
 	if c.Request.FormValue("tableName") != "" {
 		data.TBName = c.Request.FormValue("tableName")
 	}
-	result, err := data.Get(db,true)
+	result, err := data.Get(db, true)
 	if err != nil {
 		log.Errorf("Get error, %s", err.Error())
 		e.Error(500, err, "抱歉未找到相关信息")
@@ -216,7 +216,7 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 	//data.ModuleFrontName = strings.ReplaceAll(data.ModuleName, "_", "-")
 	data.PackageName = "admin"
 	data.TplCategory = "crud"
-	data.Crud = true
+	data.Crud = 1
 	// 中横线表名称，接口路径、前端文件夹名称和js名称使用
 	data.ModuleName = strings.Replace(data.TBName, "_", "-", -1)
 	dbcolumn, err := dbColumn.GetList(tx)
@@ -229,7 +229,7 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 	data.FunctionName = data.TableComment
 	//data.BusinessName = data.ModuleName
 	data.IsLogicalDelete = "1"
-	data.LogicalDelete = true
+	data.LogicalDelete = 1
 	data.LogicalDeleteColumn = "is_del"
 	data.IsActions = 2
 	data.IsDataScope = 1
@@ -242,7 +242,7 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 		column.ColumnName = dbcolumn[i].ColumnName
 		column.ColumnType = dbcolumn[i].ColumnType
 		column.Sort = i + 1
-		column.Insert = true
+		column.Insert = 1
 		column.IsInsert = "1"
 		column.QueryType = "EQ"
 		column.IsPk = "0"
@@ -260,7 +260,7 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 		}
 		if strings.Contains(dbcolumn[i].ColumnKey, "PR") {
 			column.IsPk = "1"
-			column.Pk = true
+			column.Pk = 1
 			data.PkColumn = dbcolumn[i].ColumnName
 			//column.GoField = strings.ToUpper(column.GoField)
 			//column.JsonField = strings.ToUpper(column.JsonField)
@@ -270,7 +270,7 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 		column.IsRequired = "0"
 		if strings.Contains(dbcolumn[i].IsNullable, "NO") {
 			column.IsRequired = "1"
-			column.Required = true
+			column.Required = 1
 		}
 
 		if strings.Contains(dbcolumn[i].ColumnType, "int") {

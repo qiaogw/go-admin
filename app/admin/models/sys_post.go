@@ -1,6 +1,9 @@
 package models
 
-import "go-admin/common/models"
+import (
+	"go-admin/common/global"
+	"go-admin/common/models"
+)
 
 type SysPost struct {
 	PostId   int    `gorm:"primaryKey;autoIncrement" json:"postId"` //岗位编号
@@ -17,7 +20,7 @@ type SysPost struct {
 }
 
 func (SysPost) TableName() string {
-	return "sys_post"
+	return global.TablePrefix + "sys_post"
 }
 
 func (e *SysPost) Generate() models.ActiveRecord {

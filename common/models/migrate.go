@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"go-admin/common/global"
+	"time"
+)
 
 type Migration struct {
 	Version   string    `gorm:"primaryKey"`
@@ -8,5 +11,5 @@ type Migration struct {
 }
 
 func (Migration) TableName() string {
-	return "sys_migration"
+	return global.TablePrefix + "sys_migration"
 }

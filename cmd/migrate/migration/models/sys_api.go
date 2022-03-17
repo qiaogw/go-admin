@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type SysApi struct {
 	Id     int    `json:"id" gorm:"primaryKey;autoIncrement;comment:主键编码"`
 	Handle string `json:"handle" gorm:"size:128;comment:handle"`
@@ -12,5 +14,5 @@ type SysApi struct {
 }
 
 func (SysApi) TableName() string {
-	return "sys_api"
+	return global.TablePrefix + "sys_api"
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"go-admin/common/global"
 	"go-admin/common/models"
 )
 
@@ -21,7 +22,7 @@ type SysDictData struct {
 }
 
 func (SysDictData) TableName() string {
-	return "sys_dict_data"
+	return global.TablePrefix + "sys_dict_data"
 }
 
 func (e *SysDictData) Generate() models.ActiveRecord {

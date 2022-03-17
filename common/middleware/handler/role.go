@@ -1,6 +1,9 @@
 package handler
 
-import "go-admin/common/models"
+import (
+	"go-admin/common/global"
+	"go-admin/common/models"
+)
 
 type SysRole struct {
 	RoleId    int    `json:"roleId" gorm:"primaryKey;autoIncrement"` // 角色编码
@@ -10,7 +13,7 @@ type SysRole struct {
 	RoleSort  int    `json:"roleSort" gorm:""`                       //角色排序
 	Flag      string `json:"flag" gorm:"size:128;"`                  //
 	Remark    string `json:"remark" gorm:"size:255;"`                //备注
-	Admin     bool   `json:"admin" gorm:"size:4;"`
+	Admin     int    `json:"admin" gorm:"size:4;"`
 	DataScope string `json:"dataScope" gorm:"size:128;"`
 	Params    string `json:"params" gorm:"-"`
 	MenuIds   []int  `json:"menuIds" gorm:"-"`
@@ -20,5 +23,5 @@ type SysRole struct {
 }
 
 func (SysRole) TableName() string {
-	return "sys_role"
+	return global.TablePrefix + "sys_role"
 }

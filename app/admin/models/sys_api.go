@@ -13,6 +13,7 @@ import (
 	"github.com/go-admin-team/go-admin-core/sdk/runtime"
 	"github.com/go-admin-team/go-admin-core/storage"
 
+	"go-admin/common/global"
 	"go-admin/common/models"
 )
 
@@ -28,7 +29,7 @@ type SysApi struct {
 }
 
 func (SysApi) TableName() string {
-	return "sys_api"
+	return global.TablePrefix + "sys_api"
 }
 
 func (e *SysApi) Generate() models.ActiveRecord {

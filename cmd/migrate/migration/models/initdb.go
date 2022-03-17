@@ -1,18 +1,25 @@
 package models
 
 import (
+	"bytes"
 	"fmt"
 	"go-admin/common/global"
-	"gorm.io/gorm"
 	"io/ioutil"
 	"log"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 func InitDb(db *gorm.DB) (err error) {
 	filePath := "config/db.sql"
 	if global.Driver == "postgres" {
 		filePath = "config/pg.sql"
+		err = ExecSql(db, filePath)
+		if err != nil {
+			return
+		}
+		filePath = "config/db.sql"
 		err = ExecSql(db, filePath)
 	} else if global.Driver == "mysql" {
 		filePath = "config/db-begin-mysql.sql"
@@ -52,7 +59,12 @@ func ExecSql(db *gorm.DB, filePath string) error {
 }
 
 func Ioutil(filePath string) (string, error) {
-	if contents, err := ioutil.ReadFile(filePath); err == nil {
+	contents, err := ioutil.ReadFile(filePath)
+	if err == nil {
+		if global.Driver == "postgres" {
+			contents = bytes.Replace(contents, []byte("setval('sys"), []byte("setval('"+global.TablePrefix+"sys"), -1)
+			contents = bytes.Replace(contents, []byte("INSERT INTO "), []byte("INSERT INTO "+global.TablePrefix), -1)
+		}
 		//因为contents是[]byte类型，直接转换成string类型后会多一行空格,需要使用strings.Replace替换换行符
 		result := strings.Replace(string(contents), "\n", "", 1)
 		fmt.Println("Use ioutil.ReadFile to read a file:", result)

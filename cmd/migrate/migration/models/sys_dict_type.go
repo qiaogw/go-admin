@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type DictType struct {
 	DictId   int    `gorm:"primaryKey;autoIncrement;" json:"dictId"`
 	DictName string `gorm:"size:128;" json:"dictName"` //字典名称
@@ -11,5 +13,5 @@ type DictType struct {
 }
 
 func (DictType) TableName() string {
-	return "sys_dict_type"
+	return global.TablePrefix + "sys_dict_type"
 }

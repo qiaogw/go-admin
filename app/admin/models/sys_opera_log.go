@@ -9,6 +9,7 @@ import (
 	"github.com/go-admin-team/go-admin-core/sdk"
 	"github.com/go-admin-team/go-admin-core/storage"
 
+	"go-admin/common/global"
 	"go-admin/common/models"
 )
 
@@ -38,7 +39,7 @@ type SysOperaLog struct {
 }
 
 func (SysOperaLog) TableName() string {
-	return "sys_opera_log"
+	return global.TablePrefix + "sys_opera_log"
 }
 
 func (e *SysOperaLog) Generate() models.ActiveRecord {

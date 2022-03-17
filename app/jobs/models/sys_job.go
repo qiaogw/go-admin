@@ -1,7 +1,9 @@
 package models
 
 import (
+	"go-admin/common/global"
 	"go-admin/common/models"
+
 	"gorm.io/gorm"
 )
 
@@ -24,7 +26,7 @@ type SysJob struct {
 }
 
 func (SysJob) TableName() string {
-	return "sys_job"
+	return global.TablePrefix + "sys_job"
 }
 
 func (e *SysJob) Generate() models.ActiveRecord {

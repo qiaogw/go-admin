@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type SysJob struct {
 	JobId          int    `json:"jobId" gorm:"primaryKey;autoIncrement"` // 编码
 	JobName        string `json:"jobName" gorm:"size:255;"`              // 名称
@@ -17,5 +19,5 @@ type SysJob struct {
 }
 
 func (SysJob) TableName() string {
-	return "sys_job"
+	return global.TablePrefix + "sys_job"
 }

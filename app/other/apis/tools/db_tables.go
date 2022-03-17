@@ -2,6 +2,7 @@ package tools
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-admin-team/go-admin-core/sdk/config"
 	"github.com/go-admin-team/go-admin-core/sdk/pkg"
@@ -27,8 +28,8 @@ func (e *Gen) GetDBTableList(c *gin.Context) {
 	var pageIndex = 1
 	e.Context = c
 	log := e.GetLogger()
-	if config.DatabaseConfig.Driver == "sqlite3" || config.DatabaseConfig.Driver == "postgres" {
-		err = errors.New("对不起，sqlite3 或 postgres 不支持代码生成！")
+	if config.DatabaseConfig.Driver == "sqlite3" {
+		err = errors.New("对不起，sqlite3不支持代码生成！")
 		log.Warn(err)
 		e.Error(403, err, "")
 		return

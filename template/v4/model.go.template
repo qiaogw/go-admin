@@ -38,7 +38,7 @@ type {{.ClassName}} struct {
 }
 
 func ({{.ClassName}}) TableName() string {
-    return "{{.TBName}}"
+    return global.TablePrefix + "{{.TBName}}"
 }
 
 func (e *{{.ClassName}}) Generate() models.ActiveRecord {

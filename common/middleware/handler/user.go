@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"go-admin/common/global"
 	"go-admin/common/models"
+
 	"gorm.io/gorm"
 )
 
@@ -29,7 +31,7 @@ type SysUser struct {
 }
 
 func (SysUser) TableName() string {
-	return "sys_user"
+	return global.TablePrefix + "sys_user"
 }
 
 func (e *SysUser) AfterFind(_ *gorm.DB) error {

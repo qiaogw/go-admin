@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"go-admin/common/global"
 	common "go-admin/common/models"
 	"strings"
 
@@ -29,14 +30,14 @@ type SysTables struct {
 	TreeCode            string `gorm:"size:255;" json:"treeCode"`
 	TreeParentCode      string `gorm:"size:255;" json:"treeParentCode"`
 	TreeName            string `gorm:"size:255;" json:"treeName"`
-	Tree                bool   `gorm:"size:1;default:0;" json:"tree"`
-	Crud                bool   `gorm:"size:1;default:1;" json:"crud"`
+	Tree                int    `gorm:"size:1;default:0;" json:"tree"`
+	Crud                int    `gorm:"size:1;default:1;" json:"crud"`
 	Remark              string `gorm:"size:255;" json:"remark"`
 	IsDataScope         int    `gorm:"size:1;" json:"isDataScope"`
 	IsActions           int    `gorm:"size:1;" json:"isActions"`
 	IsAuth              int    `gorm:"size:1;" json:"isAuth"`
 	IsLogicalDelete     string `gorm:"size:1;" json:"isLogicalDelete"`
-	LogicalDelete       bool   `gorm:"size:1;" json:"logicalDelete"`
+	LogicalDelete       int    `gorm:"size:1;" json:"logicalDelete"`
 	LogicalDeleteColumn string `gorm:"size:128;" json:"logicalDeleteColumn"`
 	common.ModelTime
 	common.ControlBy
@@ -48,7 +49,7 @@ type SysTables struct {
 }
 
 func (SysTables) TableName() string {
-	return "sys_tables"
+	return global.TablePrefix + "sys_tables"
 }
 
 type Params struct {
@@ -60,7 +61,7 @@ type Params struct {
 func (e *SysTables) GetPage(tx *gorm.DB, pageSize int, pageIndex int) ([]SysTables, int, error) {
 	var doc []SysTables
 
-	table := tx.Table("sys_tables")
+	table := tx.Table(global.TablePrefix + "sys_tables")
 
 	if e.TBName != "" {
 		table = table.Where("table_name = ?", e.TBName)

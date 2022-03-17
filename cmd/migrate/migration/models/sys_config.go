@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type SysConfig struct {
 	Model
 	ConfigName  string `json:"configName" gorm:"type:varchar(128);comment:ConfigName"`
@@ -13,5 +15,5 @@ type SysConfig struct {
 }
 
 func (SysConfig) TableName() string {
-	return "sys_config"
+	return global.TablePrefix + "sys_config"
 }

@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type SysTables struct {
 	TableId             int    `gorm:"primaryKey;autoIncrement" json:"tableId"`        //表编码
 	TBName              string `gorm:"column:table_name;size:255;" json:"tableName"`   //表名称
@@ -19,19 +21,19 @@ type SysTables struct {
 	TreeCode            string `gorm:"size:255;" json:"treeCode"`
 	TreeParentCode      string `gorm:"size:255;" json:"treeParentCode"`
 	TreeName            string `gorm:"size:255;" json:"treeName"`
-	Tree                bool   `gorm:"size:1;default:0;" json:"tree"`
-	Crud                bool   `gorm:"size:1;default:1;" json:"crud"`
+	Tree                int    `gorm:"size:1;default:0;" json:"tree"`
+	Crud                int    `gorm:"size:1;default:1;" json:"crud"`
 	Remark              string `gorm:"size:255;" json:"remark"`
 	IsDataScope         int    `gorm:"size:1;" json:"isDataScope"`
 	IsActions           int    `gorm:"size:1;" json:"isActions"`
 	IsAuth              int    `gorm:"size:1;" json:"isAuth"`
 	IsLogicalDelete     string `gorm:"size:1;" json:"isLogicalDelete"`
-	LogicalDelete       bool   `gorm:"size:1;" json:"logicalDelete"`
+	LogicalDelete       int    `gorm:"size:1;" json:"logicalDelete"`
 	LogicalDeleteColumn string `gorm:"size:128;" json:"logicalDeleteColumn"`
 	ModelTime
 	ControlBy
 }
 
 func (SysTables) TableName() string {
-	return "sys_tables"
+	return global.TablePrefix + "sys_tables"
 }

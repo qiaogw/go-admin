@@ -1,7 +1,9 @@
 package models
 
 import (
+	"go-admin/common/global"
 	"go-admin/common/models"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -30,7 +32,7 @@ type SysUser struct {
 }
 
 func (SysUser) TableName() string {
-	return "sys_user"
+	return global.TablePrefix + "sys_user"
 }
 
 func (e *SysUser) Generate() models.ActiveRecord {

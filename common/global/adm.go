@@ -6,7 +6,8 @@ const (
 )
 
 var (
-	Source string
-	Driver string
-	DBName string
+	Source      string
+	Driver      string
+	DBName      string
+	TablePrefix string
 )

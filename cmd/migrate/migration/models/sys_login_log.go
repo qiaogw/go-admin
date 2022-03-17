@@ -1,6 +1,7 @@
 package models
 
 import (
+	"go-admin/common/global"
 	"time"
 )
 
@@ -22,5 +23,5 @@ type SysLoginLog struct {
 }
 
 func (SysLoginLog) TableName() string {
-	return "sys_login_log"
+	return global.TablePrefix + "sys_login_log"
 }

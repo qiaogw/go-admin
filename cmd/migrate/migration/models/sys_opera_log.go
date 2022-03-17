@@ -1,6 +1,7 @@
 package models
 
 import (
+	"go-admin/common/global"
 	"time"
 )
 
@@ -30,5 +31,5 @@ type SysOperaLog struct {
 }
 
 func (SysOperaLog) TableName() string {
-	return "sys_opera_log"
+	return global.TablePrefix + "sys_opera_log"
 }

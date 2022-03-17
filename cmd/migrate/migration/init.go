@@ -1,6 +1,7 @@
 package migration
 
 import (
+	"go-admin/common/global"
 	"log"
 	"path/filepath"
 	"sort"
@@ -46,7 +47,7 @@ func (e *Migration) Migrate() {
 	var err error
 	var count int64
 	for _, v := range versions {
-		err = e.db.Table("sys_migration").Where("version = ?", v).Count(&count).Error
+		err = e.db.Table(global.TablePrefix+"sys_migration").Where("version = ?", strconv.Itoa(v)).Count(&count).Error
 		if err != nil {
 			log.Fatalln(err)
 		}

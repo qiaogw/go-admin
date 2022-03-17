@@ -36,7 +36,7 @@ type Menu struct {
 }
 
 func (Menu) TableName() string {
-	return "sys_menu"
+	return global.TablePrefix + "sys_menu"
 }
 
 func init() {

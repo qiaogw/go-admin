@@ -1,5 +1,7 @@
 package models
 
+import "go-admin/common/global"
+
 type SysPost struct {
 	PostId   int    `gorm:"primaryKey;autoIncrement" json:"postId"` //岗位编号
 	PostName string `gorm:"size:128;" json:"postName"`              //岗位名称
@@ -12,5 +14,5 @@ type SysPost struct {
 }
 
 func (SysPost) TableName() string {
-	return "sys_post"
+	return global.TablePrefix + "sys_post"
 }

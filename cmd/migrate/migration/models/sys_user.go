@@ -1,6 +1,8 @@
 package models
 
 import (
+	"go-admin/common/global"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -25,7 +27,7 @@ type SysUser struct {
 }
 
 func (SysUser) TableName() string {
-	return "sys_user"
+	return global.TablePrefix + "sys_user"
 }
 
 // Encrypt 加密
