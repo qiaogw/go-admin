@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"go-admin/common/global"
+
 	"github.com/go-admin-team/go-admin-core/sdk/pkg"
 	"gorm.io/gorm"
 
@@ -34,13 +36,13 @@ func (e *DataPermission) GetDataScope(tableName string, db *gorm.DB) (*gorm.DB, 
 		return nil, errors.New("获取用户数据出错 msg:" + err.Error())
 	}
 	if role.DataScope == "2" {
-		db = db.Where(tableName+".create_by in (select sys_user.user_id from sys_role_dept left join sys_user on sys_user.dept_id=sys_role_dept.dept_id where sys_role_dept.role_id = ?)", user.RoleId)
+		db = db.Where(tableName+".create_by in (select sys_user.user_id from "+global.TablePrefix+"sys_role_dept left join "+global.TablePrefix+"sys_user on sys_user.dept_id=sys_role_dept.dept_id where "+global.TablePrefix+"sys_role_dept.role_id = ?)", user.RoleId)
 	}
 	if role.DataScope == "3" {
-		db = db.Where(tableName+".create_by in (SELECT user_id from sys_user where dept_id = ? )", user.DeptId)
+		db = db.Where(tableName+".create_by in (SELECT user_id from "+global.TablePrefix+"sys_user where dept_id = ? )", user.DeptId)
 	}
 	if role.DataScope == "4" {
-		db = db.Where(tableName+".create_by in (SELECT user_id from sys_user where sys_user.dept_id in(select dept_id from sys_dept where dept_path like ? ))", "%"+pkg.IntToString(user.DeptId)+"%")
+		db = db.Where(tableName+".create_by in (SELECT user_id from "+global.TablePrefix+"sys_user where "+global.TablePrefix+"sys_user.dept_id in(select dept_id from "+global.TablePrefix+"sys_dept where dept_path like ? ))", "%"+pkg.IntToString(user.DeptId)+"%")
 	}
 	if role.DataScope == "5" || role.DataScope == "" {
 		db = db.Where(tableName+".create_by = ?", e.UserId)

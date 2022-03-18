@@ -11,6 +11,7 @@ import (
 
 	"go-admin/app/admin/service/dto"
 	cDto "go-admin/common/dto"
+	"go-admin/common/global"
 
 	"github.com/go-admin-team/go-admin-core/sdk/service"
 )
@@ -241,11 +242,11 @@ func (e *SysDept) deptPageCall(deptlist *[]models.SysDept, menu models.SysDept) 
 func (e *SysDept) GetWithRoleId(roleId int) ([]int, error) {
 	deptIds := make([]int, 0)
 	deptList := make([]dto.DeptIdList, 0)
-	if err := e.Orm.Table("sys_role_dept").
+	if err := e.Orm.Table(global.TablePrefix+"sys_role_dept").
 		Select("sys_role_dept.dept_id").
-		Joins("LEFT JOIN sys_dept on sys_dept.dept_id=sys_role_dept.dept_id").
+		Joins("LEFT JOIN "+global.TablePrefix+"sys_dept on sys_dept.dept_id=sys_role_dept.dept_id").
 		Where("role_id = ? ", roleId).
-		Where(" sys_role_dept.dept_id not in(select sys_dept.parent_id from sys_role_dept LEFT JOIN sys_dept on sys_dept.dept_id=sys_role_dept.dept_id where role_id =? )", roleId).
+		Where(global.TablePrefix+"sys_role_dept.dept_id not in(select sys_dept.parent_id from "+global.TablePrefix+"sys_role_dept LEFT JOIN "+global.TablePrefix+"sys_dept on sys_dept.dept_id=sys_role_dept.dept_id where role_id =? )", roleId).
 		Find(&deptList).Error; err != nil {
 		return nil, err
 	}

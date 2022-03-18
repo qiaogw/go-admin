@@ -99,7 +99,7 @@ type SysRoleMenu struct {
 //
 //func (e *SysRoleMenu) GetIDS(tx *gorm.DB, roleName string) ([]models.MenuPath, error) {
 //	var r []models.MenuPath
-//	table := tx.Select("sys_menu.path").Table("sys_role_menu")
+//	table := tx.Select("sys_menu.path").Table(global.TablePrefix+"sys_role_menu")
 //	table = table.Joins("left join sys_role on sys_role.role_id=sys_role_menu.role_id")
 //	table = table.Joins("left join sys_menu on sys_menu.id=sys_role_menu.menu_id")
 //	table = table.Where("sys_role.role_name = ? and sys_menu.type=1", roleName)
