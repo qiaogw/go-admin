@@ -2,10 +2,11 @@ package apis
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin/binding"
-	"github.com/go-admin-team/go-admin-core/sdk"
 	"go-admin/app/admin/models"
 	"net/http"
+
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-admin-team/go-admin-core/sdk"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-admin-team/go-admin-core/sdk/api"
@@ -198,7 +199,8 @@ func (e SysRole) Delete(c *gin.Context) {
 		return
 	}
 
-	err = s.Remove(&req)
+	cb := sdk.Runtime.GetCasbinKey(c.Request.Host)
+	err = s.Remove(&req, cb)
 	if err != nil {
 		e.Logger.Error(err)
 		e.Error(500, err, "")

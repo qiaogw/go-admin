@@ -2,13 +2,12 @@ package service
 
 import (
 	"errors"
-	"github.com/go-admin-team/go-admin-core/sdk/config"
-	"gorm.io/gorm/clause"
 
 	"github.com/casbin/casbin/v2"
-
+	"github.com/go-admin-team/go-admin-core/sdk/config"
 	"github.com/go-admin-team/go-admin-core/sdk/service"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"go-admin/app/admin/models"
 	"go-admin/app/admin/service/dto"
@@ -134,9 +133,9 @@ func (e *SysRole) Update(c *dto.SysRoleUpdateReq, cb *casbin.SyncedEnforcer) err
 	}
 	c.Generate(&model)
 	model.SysMenu = &mlist
-	db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Debug().Save(&model)
-
-	if db.Error != nil {
+	db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Debug().Omit("SysMenu.*").Save(&model)
+	err = db.Error
+	if err != nil {
 		e.Log.Errorf("db error:%s", err)
 		return err
 	}
@@ -169,7 +168,7 @@ func (e *SysRole) Update(c *dto.SysRoleUpdateReq, cb *casbin.SyncedEnforcer) err
 }
 
 // Remove 删除SysRole
-func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
+func (e *SysRole) Remove(c *dto.SysRoleDeleteReq, cb *casbin.SyncedEnforcer) error {
 	var err error
 	tx := e.Orm
 	if config.DatabaseConfig.Driver != "sqlite3" {
@@ -184,6 +183,13 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 	}
 	var model = models.SysRole{}
 	tx.Preload("SysMenu").Preload("SysDept").First(&model, c.GetId())
+	// remove casbin rule before delete role
+	_, err = cb.RemoveFilteredPolicy(0, model.RoleKey)
+	if err != nil {
+		e.Log.Errorf("delete policy error:%s", err)
+		return err
+	}
+
 	db := tx.Select(clause.Associations).Delete(&model)
 
 	if db.Error != nil {
