@@ -35,8 +35,8 @@ require (
 )
 
 replace (
-	github.com/go-admin-team/go-admin-core v1.3.8 => github.com/guo1017138/go-admin-core v1.3.9-0.20220322065713-ac3de1c15559
-	github.com/go-admin-team/go-admin-core/sdk v1.3.9 => github.com/guo1017138/go-admin-core/sdk v0.0.0-20220322065713-ac3de1c15559
+	github.com/go-admin-team/go-admin-core v1.3.8 => github.com/guo1017138/go-admin-core v0.0.0-20220402035703-a2ec82d0ec80
+	github.com/go-admin-team/go-admin-core/sdk v1.3.9 => github.com/guo1017138/go-admin-core/sdk v0.0.0-20220402035703-a2ec82d0ec80
 	github.com/go-admin-team/gorm-adapter/v3 v3.2.1-0.20220308061210-6db7e7891fb9 => github.com/guo1017138/gorm-adapter/v3 v3.2.1-0.20220322135516-b172e62068d5
 	gorm.io/driver/postgres v1.3.1 => github.com/guo1017138/postgres v1.3.2-0.20220322085742-49dc93b0c9c6
 )
