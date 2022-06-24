@@ -1,6 +1,6 @@
 module go-admin
 
-go 1.15
+go 1.16
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
@@ -18,14 +18,14 @@ require (
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/prometheus/client_golang v1.11.0
 	github.com/qiniu/go-sdk/v7 v7.11.1
-	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil/v3 v3.22.1
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	github.com/unrolled/secure v1.0.8
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	github.com/xuri/excelize/v2 v2.6.0
+	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	gorm.io/driver/mysql v1.3.2
 	gorm.io/driver/postgres v1.3.1

@@ -1,7 +1,6 @@
 package router
 
 import (
-	//"github.com/go-admin-team/go-admin-core/sdk/pkg"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -25,12 +24,13 @@ func InitRouter() {
 		log.Fatal("not support other engine")
 		os.Exit(-1)
 	}
-
+	// the jwt middleware
 	authMiddleware, err := common.AuthInit()
 	if err != nil {
 		log.Fatalf("JWT Init Error, %s", err.Error())
 	}
 
 	// 注册业务路由
+	// TODO: 这里可存放业务路由，里边并无实际路由只有演示代码
 	initRouter(r, authMiddleware)
 }

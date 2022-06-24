@@ -20,7 +20,7 @@ import (
 
 	"go-admin/app/admin/models"
 	"go-admin/app/admin/router"
-	"go-admin/app/jobs"
+	// "go-admin/app/jobs"
 	"go-admin/common/database"
 	"go-admin/common/global"
 	common "go-admin/common/middleware"
@@ -33,7 +33,7 @@ var (
 	configYml string
 	apiCheck  bool
 	StartCmd  = &cobra.Command{
-		Use:          "server",
+		Use:          "start",
 		Short:        "Start API server",
 		Example:      "go-admin server -c config/settings.yml",
 		SilenceUsage: true,
@@ -91,11 +91,11 @@ func run() error {
 		Handler: sdk.Runtime.GetEngine(),
 	}
 
-	go func() {
-		jobs.InitJob()
-		jobs.Setup(sdk.Runtime.GetDb())
+	// go func() {
+	// 	jobs.InitJob()
+	// 	jobs.Setup(sdk.Runtime.GetDb())
 
-	}()
+	// }()
 
 	if apiCheck {
 		var routers = sdk.Runtime.GetRouter()

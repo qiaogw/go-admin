@@ -6,8 +6,7 @@ import (
 	"strings"
 
 	"gorm.io/gorm"
-
-	"go-admin/app/admin/models"
+	// "go-admin/app/admin/models"
 )
 
 type SysTables struct {
@@ -45,7 +44,7 @@ type SysTables struct {
 	Params    Params       `gorm:"-" json:"params"`
 	Columns   []SysColumns `gorm:"-" json:"columns"`
 
-	models.BaseModel
+	// models.BaseModel
 }
 
 func (SysTables) TableName() string {
@@ -230,8 +229,19 @@ func (e *SysTables) Delete(db *gorm.DB) (success bool, err error) {
 	return
 }
 
-func (e *SysTables) BatchDelete(tx *gorm.DB, id []int) (Result bool, err error) {
-	if err = tx.Unscoped().Table(e.TableName()).Where(" table_id in (?)", id).Delete(&SysColumns{}).Error; err != nil {
+func (e *SysTables) BatchDelete(db *gorm.DB, id []int) (Result bool, err error) {
+	tx := db.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+	if err = tx.Unscoped().Where("table_id  in (?)", id).Delete(&SysTables{}).Error; err != nil {
+		return
+	}
+	if err = tx.Unscoped().Where("table_id  in (?)", id).Delete(&SysColumns{}).Error; err != nil {
 		return
 	}
 	Result = true
