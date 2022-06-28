@@ -244,6 +244,7 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 		column.Sort = i + 1
 		column.Insert = 1
 		column.IsInsert = "1"
+		column.IsList = "1"
 		column.QueryType = "EQ"
 		column.IsPk = "0"
 
@@ -274,12 +275,16 @@ func genTableInit(tx *gorm.DB, tablesList []string, i int, c *gin.Context) (tool
 		}
 
 		if strings.Contains(dbcolumn[i].ColumnType, "int") {
-			if strings.Contains(dbcolumn[i].ColumnKey, "PR") {
-				column.GoType = "int"
-			} else {
-				column.GoType = "string"
-			}
+			//if strings.Contains(dbcolumn[i].ColumnKey, "PR") {
+			//	column.GoType = "int"
+			//} else {
+			//	column.GoType = "string"
+			//}
+			column.GoType = "int"
 			column.HtmlType = "input"
+		} else if strings.Contains(dbcolumn[i].ColumnType, "decimal") {
+			column.GoType = "float64"
+			column.HtmlType = "number"
 		} else if strings.Contains(dbcolumn[i].ColumnType, "timestamp") {
 			column.GoType = "time.Time"
 			column.HtmlType = "datetime"

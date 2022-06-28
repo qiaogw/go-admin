@@ -23,5 +23,7 @@ func register{{.ClassName}}Router(v1 *gin.RouterGroup, authMiddleware *jwt.GinJW
 		r.POST("", api.Insert)
 		r.PUT("/:id", actions.PermissionAction(), api.Update)
 		r.DELETE("", api.Delete)
+        r.GET("/export", api.Export)
+        r.POST("/import", api.Import)
 	}
 }

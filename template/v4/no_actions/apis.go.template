@@ -12,6 +12,7 @@ import (
 	"go-admin/app/{{.PackageName}}/service"
 	"go-admin/app/{{.PackageName}}/service/dto"
 	"go-admin/common/actions"
+	"go-admin/common/tools"
 )
 
 type {{.ClassName}} struct {
@@ -194,4 +195,80 @@ func (e {{.ClassName}}) Delete(c *gin.Context) {
         return
 	}
 	e.OK( req.GetId(), "删除成功")
+}
+
+
+// Export 导出{{.TableComment}}
+// @Summary 导出{{.TableComment}}
+// @Description 导出{{.TableComment}}
+// @Tags {{.TableComment}}
+// @Param pageSize query int false "页条数"
+// @Param pageIndex query int false "页码"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/energy-dim-tick/export [get]
+// @Security Bearer
+func (e {{.ClassName}}) Export(c *gin.Context) {
+	req := dto.{{.ClassName}}GetPageReq{}
+	s := service.{{.ClassName}}{}
+	err := e.MakeContext(c).
+		MakeOrm().
+		Bind(&req).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Logger.Error(err)
+		e.Error(500, err, err.Error())
+		return
+	}
+
+	p := actions.GetPermissionFromContext(c)
+	list := make([]models.{{.ClassName}}, 0)
+	var count int64
+
+	err = s.GetPage(&req, p, &list, &count)
+	if err != nil {
+		e.Error(500, err, fmt.Sprintf("导出{{.TableComment}} 失败，\r\n失败信息 %s", err.Error()))
+		return
+	}
+
+	m := new(models.{{.ClassName}})
+	tools.ExportToWeb(c, m, list, m.TableName())
+}
+
+// Import 导入{{.TableComment}}
+// @Summary 导入{{.TableComment}}
+// @Description 导入{{.TableComment}}
+// @Tags {{.TableComment}}
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/energy-dim-tick/import [get]
+// @Security Bearer
+func (e {{.ClassName}}) Import(c *gin.Context) {
+	files, err := c.FormFile("file")
+	if err != nil {
+		e.Logger.Error(err)
+		e.Error(500, err, err.Error())
+		return
+	}
+	//获取文件句柄
+	hFile, err := files.Open()
+	if err != nil {
+		e.Logger.Error(err)
+		e.Error(500, err, err.Error())
+		return
+	}
+	s := service.{{.ClassName}}{}
+	err = e.MakeContext(c).
+		MakeOrm().
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(500, err, err.Error())
+		return
+	}
+	err = s.Import(hFile)
+	if err != nil {
+		e.Error(500, err, err.Error())
+		return
+	}
+	e.OK(nil, "导入成功")
 }

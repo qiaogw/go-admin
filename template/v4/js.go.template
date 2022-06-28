@@ -44,4 +44,22 @@ export function del{{.ClassName}}(data) {
         data: data
     })
 }
+// 导出 {{.ClassName}}
+export function export{{.ClassName}}(query) {
+  return request({
+    url: '/api/v1/{{.ModuleName}}/export',
+    method: 'get',
+    params: query,
+    responseType: 'arraybuffer'
+  })
+}
+
+// 导入 {{.ClassName}}
+export function import{{.ClassName}}(data) {
+  return request({
+    url: '/api/v1/{{.ModuleName}}/import',
+    method: 'post',
+    data: data
+  })
+}
 

@@ -1,13 +1,15 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
-
-    "github.com/go-admin-team/go-admin-core/sdk/service"
+	"github.com/go-admin-team/go-admin-core/sdk/service"
+	"go-admin/common/tools"
 	"gorm.io/gorm"
+	"io"
 
-	"go-admin/app/{{.PackageName}}/models"
-	"go-admin/app/{{.PackageName}}/service/dto"
+	"go-admin/app/energy/models"
+	"go-admin/app/energy/service/dto"
 	"go-admin/common/actions"
 	cDto "go-admin/common/dto"
 )
@@ -105,5 +107,58 @@ func (e *{{.ClassName}}) Remove(d *dto.{{.ClassName}}DeleteReq, p *actions.DataP
     if db.RowsAffected == 0 {
         return errors.New("无权删除该数据")
     }
+	return nil
+}
+
+
+// Import 导入{{.ClassName}}对象
+func (e *{{.ClassName}}) Import(hFile io.Reader) (err error) {
+	tx := e.Orm.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+	var data []models.{{.ClassName}}
+	temp := new(models.{{.ClassName}})
+	ex := new(tools.ExcelStruct)
+	ex.Model = temp
+	err = ex.ReadExcelIo(hFile)
+	if err != nil {
+		e.Log.Error(err)
+		return err
+	}
+	err = ex.CreateMap()
+	if err != nil {
+		e.Log.Error(err)
+		return
+	}
+
+	err = tx.Unscoped().Where("1=1").Delete(models.{{.ClassName}}{}).Error
+	if err != nil {
+		return err
+	}
+	x, err := json.Marshal(ex.Info)
+	if err != nil {
+		e.Log.Errorf("{{.ClassName}}Service Import error:%s \r\n", err)
+		return err
+	}
+	err = json.Unmarshal(x, &data)
+	if err != nil {
+		e.Log.Errorf("{{.ClassName}}Service Import error:%s \r\n", err)
+		return err
+	}
+	for i := 0; i < len(data); i += 1000 {
+		end := i + 1000
+		if end > len(data) {
+			end = len(data)
+		}
+		err = tx.CreateInBatches(data[i:end], len(data[i:end])).Error
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

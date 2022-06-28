@@ -3,7 +3,9 @@
 package tools
 
 import (
+	"encoding/json"
 	"fmt"
+	log "github.com/go-admin-team/go-admin-core/logger"
 	"net/url"
 	"strconv"
 	"time"
@@ -27,19 +29,34 @@ type ExcelExport struct {
 	Path      string                   `json:"path"`
 }
 
-func NewMyExcel(sheetName string, tag TagBody, data interface{}) *ExcelExport {
-	e := &ExcelExport{File: createFile(), SheetName: sheetName}
+func NewMyExcel(sheetName string, tag TagBody, data interface{}) (*ExcelExport, error) {
+	e := new(ExcelExport)
+	e.SheetName = sheetName
+	e.File = createFile(sheetName)
 	for i, v := range tag.Keys {
 		p := make(map[string]string)
 		p["key"] = v
 		p["title"] = tag.Header[i]
 		p["width"] = "20"
-		p["is_num"] = "1"
 		e.Params = append(e.Params, p)
 	}
-	fmt.Printf("tag is %+v\n", tag)
-	fmt.Printf("NewMyExcel is %+v\n", e)
-	return e
+	dj, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	var dm []map[string]interface{}
+	err = json.Unmarshal(dj, &dm)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range dm {
+		st := make(map[string]interface{})
+		for _, o := range tag.Keys {
+			st[o], _ = v[o]
+		}
+		e.Data = append(e.Data, st)
+	}
+	return e, nil
 }
 
 // ExportToPath 导出基本的表格
@@ -49,6 +66,21 @@ func (l *ExcelExport) ExportToPath() (string, error) {
 	filePath := l.Path + "/" + name
 	err := l.File.SaveAs(filePath)
 	return filePath, err
+}
+
+func ExportToWeb(c *gin.Context, m, list interface{}, name string) {
+	tag := GetTag(m)
+	log.Debugf("tag.keys is %v\n", len(tag.Keys))
+	log.Debugf("tag.field is %v\n", len(tag.Field))
+	log.Debugf("tag.keys is %v\n", tag.Keys)
+	log.Debugf("tag.field is %v\n", tag.Field)
+	log.Debugf("tag.Header is %v\n", tag.Header)
+	ex, err := NewMyExcel(name, tag, list)
+	if err != nil {
+		c.Error(err)
+	}
+	log.Debugf("ex.Params is %+v\n", ex.Params)
+	ex.ExportToWeb(c)
 }
 
 // ExportToWeb 导出到浏览器。此处使用的gin框架 其他框架可自行修改ctx
@@ -65,16 +97,17 @@ func (l *ExcelExport) ExportToWeb(ctx *gin.Context) {
 //设置首行
 func (l *ExcelExport) writeTop() {
 	topStyle, _ := l.File.NewStyle(`{"font":{"bold":true},"alignment":{"horizontal":"center","vertical":"center"}}`)
-	var word = 'A'
+	var word = 1
 	//首行写入
 	for _, conf := range l.Params {
 		title := conf["title"]
 		width, _ := strconv.ParseFloat(conf["width"], 64)
-		line := fmt.Sprintf("%c1", word)
+		col, _ := excelize.ColumnNumberToName(word)
+		line := fmt.Sprintf("%s1", col)
 		//设置标题
 		_ = l.File.SetCellValue(l.SheetName, line, title)
 		//列宽
-		_ = l.File.SetColWidth(l.SheetName, fmt.Sprintf("%c", word), fmt.Sprintf("%c", word), width)
+		_ = l.File.SetColWidth(l.SheetName, col, col, width)
 		//设置样式
 		_ = l.File.SetCellStyle(l.SheetName, line, line, topStyle)
 		word++
@@ -90,20 +123,13 @@ func (l *ExcelExport) writeData() {
 		//设置行高
 		_ = l.File.SetRowHeight(l.SheetName, i+1, defaultHeight)
 		//逐列写入
-		var word = 'A'
+		var word = 1
 		for _, conf := range l.Params {
 			valKey := conf["key"]
-			line := fmt.Sprintf("%c%v", word, j)
-			isNum := conf["is_num"]
-
+			col, _ := excelize.ColumnNumberToName(word)
+			line := fmt.Sprintf("%s%v", col, j)
 			//设置值
-			if isNum != "0" {
-				valNum := fmt.Sprintf("'%v", val[valKey])
-				_ = l.File.SetCellValue(l.SheetName, line, valNum)
-			} else {
-				_ = l.File.SetCellValue(l.SheetName, line, val[valKey])
-			}
-
+			_ = l.File.SetCellValue(l.SheetName, line, val[valKey])
 			//设置样式
 			_ = l.File.SetCellStyle(l.SheetName, line, line, lineStyle)
 			word++
@@ -119,11 +145,20 @@ func (l *ExcelExport) export() {
 	l.writeData()
 }
 
-func createFile() *excelize.File {
+func createFile(sheetNames ...string) *excelize.File {
 	f := excelize.NewFile()
 	// 创建一个默认工作表
-	SheetName := defaultSheetName
-	index := f.NewSheet(SheetName)
+	//SheetName := defaultSheetName
+	var index int
+	if len(sheetNames) < 1 {
+		index = f.NewSheet(defaultSheetName)
+	} else {
+		for _, s := range sheetNames {
+			index = f.NewSheet(s)
+		}
+		f.DeleteSheet(defaultSheetName)
+	}
+	//index := f.NewSheet(sheetName)
 	// 设置工作簿的默认工作表
 	f.SetActiveSheet(index)
 	return f

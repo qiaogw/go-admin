@@ -10,13 +10,13 @@ import (
 )
 
 func init() {
-	routerCheckRole = append(routerCheckRole, registerEnergyDimTickRouter)
+	routerCheckRole = append(routerCheckRole, registerEnergyConsumptionRouter)
 }
 
-// registerEnergyDimTickRouter
-func registerEnergyDimTickRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
-	api := apis.EnergyDimTick{}
-	r := v1.Group("/energy-dim-tick").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+// registerEnergyConsumptionRouter
+func registerEnergyConsumptionRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	api := apis.EnergyConsumption{}
+	r := v1.Group("/energy-consumption").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		r.GET("", actions.PermissionAction(), api.GetPage)
 		r.GET("/:id", actions.PermissionAction(), api.Get)

@@ -76,47 +76,60 @@
                         >删除
                         </el-button>
                     </el-col>
+                    <el-col :span="1.5">
+                                <excel-export ref="excelExport" :book-type="bookType" :filename="filename" :sheet="sheet"
+                                  :on-error="onError" :manual="true" />
+                                <el-button v-permisaction="['{{.PackageName}}:{{.BusinessName}}:list']" type="success" icon="el-icon-download" size="mini"
+                                  @click="handleExport">导出
+                                </el-button>
+                      </el-col>
+                      <el-col :span="1.5">
+                        <el-upload v-permisaction="['{{.PackageName}}:{{.BusinessName}}:list']" :before-upload="handleImport" action="default">
+                          <el-button size="mini" type="primary" icon="el-icon-upload">导入</el-button>
+                        </el-upload>
+                      </el-col>
                 </el-row>
 
-                <el-table v-loading="loading" :data="{{.BusinessName}}List" @selection-change="handleSelectionChange">
-                    <el-table-column type="selection" width="55" align="center"/>
+                <vxe-table border ref="xTable1" v-loading="loading" :data="{{.BusinessName}}List"
+                @checkbox-change="handleSelectionChange">
+                    <vxe-column type="checkbox" width="55" align="center" />
                     {{- range .Columns -}}
                         {{- $x := .IsList -}}
                         {{- if (eq $x "1") }}
                             {{- if ne .FkTableName "" -}}
-                            <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :formatter="{{.JsonField}}Format" width="100">
+                            <vxe-column title="{{.ColumnComment}}" align="center" field="{{.JsonField}}" :formatter="{{.JsonField}}Format" width="100">
                                 <template slot-scope="scope">
                                     {{ "{{" }} {{.JsonField}}Format(scope.row) {{"}}"}}
                                 </template>
-                            </el-table-column>
+                            </vxe-column>
 
                             {{- else -}}
                             {{- if ne .DictType "" -}}
-                                <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}"
+                                <vxe-column title="{{.ColumnComment}}" align="center" field="{{.JsonField}}"
                                                  :formatter="{{.JsonField}}Format" width="100">
                                     <template slot-scope="scope">
                                         {{ "{{" }} {{.JsonField}}Format(scope.row) {{"}}"}}
                                     </template>
-                                </el-table-column>
+                                </vxe-column>
 
                             {{- end -}}
                             {{- if eq .DictType "" -}}
                                 {{- if eq .HtmlType "datetime" -}}
-                                <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}"
+                                <vxe-column title="{{.ColumnComment}}" align="center" field="{{.JsonField}}"
                                                  :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
                                     <span>{{ "{{" }} parseTime(scope.row.{{.JsonField}}) {{"}}"}}</span>
                                     </template>
-                                </el-table-column>
+                                </vxe-column>
                                 {{- else -}}
-                                <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}"
+                                <vxe-column title="{{.ColumnComment}}" align="center" field="{{.JsonField}}"
                                                  :show-overflow-tooltip="true"/>
                                 {{- end -}}
                             {{- end -}}
                             {{- end -}}
                         {{- end }}
                     {{- end }}
-                    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+                    <vxe-column title="操作" align="center" class-name="small-padding fixed-width">
                         <template slot-scope="scope">
                          <el-popconfirm
                            class="delete-popconfirm"
@@ -149,8 +162,8 @@
                             </el-button>
                          </el-popconfirm>
                         </template>
-                    </el-table-column>
-                </el-table>
+                    </vxe-column>
+                </vxe-table>
 
                 <pagination
                         v-show="total>0"
@@ -173,7 +186,7 @@
                                 {{- else if eq .GoField "UpdateBy" -}}
                                 {{- else if eq .GoField "CreateBy" -}}
                                 {{- else }}
-                                    <el-form-item label="{{.ColumnComment}}" prop="{{.JsonField}}">
+                                    <el-form-item label="{{.ColumnComment}}" field="{{.JsonField}}">
                                         {{ if eq "input" .HtmlType -}}
                                             <el-input v-model="form.{{.JsonField}}" placeholder="{{.ColumnComment}}"
                                                       {{if eq .IsEdit "false" -}}:disabled="isEdit" {{- end}}/>
@@ -243,7 +256,14 @@
 </template>
 
 <script>
-    import {add{{.ClassName}}, del{{.ClassName}}, get{{.ClassName}}, list{{.ClassName}}, update{{.ClassName}}} from '@/api/{{ .PackageName}}/{{ .MLTBName}}'
+    import {
+        add{{.ClassName}}, 
+        del{{.ClassName}}, 
+        get{{.ClassName}}, 
+        list{{.ClassName}}, 
+        update{{.ClassName}},
+        export{{.ClassName}}, import{{.ClassName}}
+    } from '@/api/{{ .PackageName}}/{{ .MLTBName}}'
     {{ $package:=.PackageName }}
     {{range .Columns}}
     {{- if ne .FkTableName "" -}}
@@ -479,6 +499,53 @@
                    }
                 }).catch(function () {
                 })
+            },
+            // 导出
+            handleExport() {
+              this.loading = true
+              this.queryParams.pageIndex = 1
+              this.queryParams.pageSize = 10000
+              export{{.ClassName}}(this.addDateRange(this.queryParams, this.dateRange))
+                .then(res => {
+                  const blob = new Blob([res.data], {
+                    // type: res.headers['content-type']
+                    type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8` // word文档为msword,pdf文档为pdf
+                  }
+                  )
+                  const downloadElement = document.createElement('a')
+                  const href = window.URL.createObjectURL(blob)
+                  // 后台再header中传文件名
+                  // const name = fileName
+                  downloadElement.href = href
+                  // downloadElement.setAttribute('download',row.name)//关键点4
+                  downloadElement.download = '导出-{{.TableComment}}'
+                  document.body.appendChild(downloadElement)
+                  downloadElement.click()
+                  document.body.removeChild(downloadElement) // 下载完成移除元素
+                  window.URL.revokeObjectURL(href) // 释放掉blob对象
+                  this.loading = false
+                })
+                .catch(err => {
+                  this.msgError(err)
+                  this.loading = false
+                  // var enc = new TextDecoder('utf-8')
+                  // var res = JSON.parse(enc.decode(new Uint8Array(err))) // 转化成json对象
+                  // console.log(res)
+                  // this.$log.push('err', err)
+                })
+            },
+            // 导入
+            handleImport(file) {
+              let fd = new FormData()
+              fd.append('file', file) // 传文件
+              import{{.ClassName}}(fd).then(response => {
+                if (response.code === 200) {
+                  this.msgSuccess(response.msg)
+                  this.getList()
+                } else {
+                  this.msgError(response)
+                }
+              })
             }
         }
     }
